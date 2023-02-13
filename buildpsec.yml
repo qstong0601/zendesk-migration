@@ -1,0 +1,47 @@
+version: 0.2
+env:
+  secrets-manager:
+    # SNYK_AUTH_TOKEN: $SNYK_TOKEN_ARN:SNYK_TOKEN
+    SNYK_TOKEN: $SNYK_TOKEN_ARN:SNYK_TOKEN
+phases:
+  pre_build:
+    commands:
+      # Logging into ECR
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      # # Install Snyk on runner
+      # - echo Install Snyk
+      # - curl -Lo ./snyk "https://github.com/snyk/snyk/releases/download/v1.1039.0/snyk-linux"
+      # - chmod -R +x ./snyk
+      # # Configure Snyk auth
+      # - ./snyk config set api="$SNYK_AUTH_TOKEN"
+  build:
+    on-failure: CONTINUE
+    commands:
+      # Building app docker image
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - export timestamp=$(date +%Y%m%d%H%M%S)
+      - docker build -t $IMAGE_REPO_NAME:$timestamp .
+      - docker tag $IMAGE_REPO_NAME:$timestamp $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
+      - docker run --rm -it --env $SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk test --docker $IMAGE_REPO_NAME:$timestamp --severity-threshold=critical --json
+
+      # Scan app docker image with Snyk
+      # - ./snyk test --severity-threshold=medium --docker $IMAGE_REPO_NAME:$timestamp --file=./Dockerfile --app-vulns --exclude-base-image-vulns
+      # - ./snyk container test $IMAGE_REPO_NAME:$timestamp --file=./Dockerfile --app-vulns --exclude-base-image-vulns
+      # - pwd
+      # - ls
+      # - ./snyk --help
+      # # Testing code quality
+      # - ./snyk code test --severity-threshold=high
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
+      - echo deploy to Lambda
+      - aws lambda update-function-code --function-name $FUNCTION_NAME --image-uri $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
+      - echo finished execution
+      # Fully integrated with CodePipeline and CodeBuild; deploy the image to ECR and pulled down by Lambda
+      # Python code credentials had been replaced with environment variables
