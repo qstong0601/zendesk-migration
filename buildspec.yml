@@ -50,7 +50,7 @@ phases:
       - PRESIGNED_URL=$(aws s3 presign s3://poc-mc-devsecops-reports/$IMAGE_REPO_NAME/sca/sca_$IMAGE_REPO_NAME_$timestamp.json)
       - echo Sending pre-signed URL to Slack...
       - yum install -y curl
-      - curl -X POST -H 'Content-type: application/json' --data '{"text":"The pre-signed URL of SCA scan of $IMAGE_REPO_NAME:$timestamp: '$PRESIGNED_URL'"}' https://hooks.slack.com/services/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
+      - curl -X POST -H 'Content-type: application/json' --data '{"text":"The pre-signed URL of SCA scan of $IMAGE_REPO_NAME:$timestamp '$PRESIGNED_URL'"}' https://hooks.slack.com/services/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
       # - echo The pre-signed URL is $PRESIGNED_URL
       # - echo SAST scan reports to S3 for record keeping
       # - aws s3 cp sast_vuln.json s3://poc-mc-devsecops-reports/$IMAGE_REPO_NAME/sast/sast_$IMAGE_REPO_NAME_$timestamp.json
