@@ -20,11 +20,14 @@ phases:
     commands:
       # Building app docker image
       - echo Build started on `date`
+      # print out current working directory
+      - echo $PWD
       - echo Building the Docker image...
       - export timestamp=$(date +%Y%m%d%H%M%S)
       - docker build -t $IMAGE_REPO_NAME:$timestamp .
       - docker tag $IMAGE_REPO_NAME:$timestamp $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
       - docker run --rm -it --env $SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk test --docker $IMAGE_REPO_NAME:$timestamp --severity-threshold=critical --json
+      - docker run --rm -it --env SNYK_TOKEN -v $PWD:/app snyk/snyk:docker 'snyk code test'
 
       # Scan app docker image with Snyk
       # - ./snyk test --severity-threshold=medium --docker $IMAGE_REPO_NAME:$timestamp --file=./Dockerfile --app-vulns --exclude-base-image-vulns
