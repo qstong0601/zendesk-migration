@@ -1,4 +1,4 @@
-FROM python:3.6-slim
+FROM 456403635917.dkr.ecr.us-east-1.amazonaws.com/python:3.6-slim
 LABEL maintainer="agunn-mc"
 
 # Required env
