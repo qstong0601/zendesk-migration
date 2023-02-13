@@ -22,6 +22,8 @@ phases:
       - echo Build started on `date`
       # print out current working directory
       - echo $PWD
+      # print out SNYK TOKEN
+      - echo $SNYK_TOKEN
       - echo Building the Docker image...
       - export timestamp=$(date +%Y%m%d%H%M%S)
       - docker build -t $IMAGE_REPO_NAME:$timestamp .
