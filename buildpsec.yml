@@ -40,8 +40,8 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
-      - echo deploy to Lambda
-      - aws lambda update-function-code --function-name $FUNCTION_NAME --image-uri $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
-      - echo finished execution
+      # - echo deploy to Lambda
+      # - aws lambda update-function-code --function-name $FUNCTION_NAME --image-uri $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
+      # - echo finished execution
       # Fully integrated with CodePipeline and CodeBuild; deploy the image to ECR and pulled down by Lambda
       # Python code credentials had been replaced with environment variables
