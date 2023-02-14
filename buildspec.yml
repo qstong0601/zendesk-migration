@@ -55,24 +55,27 @@ phases:
       - aws s3 cp sast_vuln.json s3://poc-mc-devsecops-reports/$IMAGE_REPO_NAME/sast/sast_$IMAGE_REPO_NAME_$timestamp.json
       - echo generating a pre-signed url for sharing later
       - PRESIGNED_URL_SAST=$(aws s3 presign s3://poc-mc-devsecops-reports/$IMAGE_REPO_NAME/sast/sast_$IMAGE_REPO_NAME_$timestamp.json)
-
-
-
-
       - echo Sending pre-signed URL to Slack...
       - >- 
         curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"SCA Report of ${IMAGE_REPO_NAME}:${timestamp} ${PRESIGNED_URL_SCA}\"}" $SLACK_WEBHOOK
       - >- 
         curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"SAST Report of ${IMAGE_REPO_NAME}:${timestamp} ${PRESIGNED_URL_SAST}\"}" $SLACK_WEBHOOK
-      - if [ $exit_code_sca -eq 0 ] && [ $exit_code_sast -eq 0 ]; then 
+      - |
+        if [ $exit_code_sca -eq 0 ] && [ $exit_code_sast -eq 0 ]; then 
           echo Build completed on `date`;
           echo Pushing the Docker image...;
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp;
-        elif [$exit_code_sca -ne 0]; then
-          echo SCA scan failed critical vulnerabilities are found;
-          curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"Build of ${IMAGE_REPO_NAME}:${timestamp} failed due to SCA exit code ${exit_code_sca}\"}" $SLACK_WEBHOOK;
-        elif [$exit_code_sast -ne 0]; then
-          curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"Build of ${IMAGE_REPO_NAME}:${timestamp} failed due to SAST exit code ${exit_code_sca}\"}" $SLACK_WEBHOOK;
+          curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"Build ${IMAGE_REPO_NAME}:${timestamp} succeeded\"}" $SLACK_WEBHOOK
+        fi
+      - |
+        if [ $exit_code_sca -ne 0 ]; then
+          echo build failed due to non zero sca exit code
+          curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"Build ${IMAGE_REPO_NAME}:${timestamp} failed due to non zero SCA exit code ${exit_code_sca}\"}" $SLACK_WEBHOOK
+        fi
+      - |
+        if [ $exit_code_sast -ne 0 ]; then
+          echo build failed due to non zero sast exit code
+          curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"Build ${IMAGE_REPO_NAME}:${timestamp} failed due to non zero SAST exit code ${exit_code_sast}\"}" $SLACK_WEBHOOK
         fi
 
 
