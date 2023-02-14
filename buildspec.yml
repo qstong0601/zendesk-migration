@@ -31,11 +31,10 @@ phases:
       # sca
       - set +e
       - docker run --rm --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/app snyk/snyk:docker snyk test --docker $IMAGE_REPO_NAME:$timestamp --severity-threshold=critical --json-file-output=/app/sca_vuln.json; exit_code_sca=$?
-      - set -e
       - echo $exit_code_sca
       # sast
-      - docker run --rm --env SNYK_TOKEN -v $PWD:/app snyk/snyk:docker snyk code test --json-file-output=/app/sast_vuln.json; exit 0
-      - ls
+      - docker run --rm --env SNYK_TOKEN -v $PWD:/app snyk/snyk:docker snyk code test --json-file-output=/app/sast_vuln.json; exit_code_sast=$?
+      - echo $exit_code_sast
       # Steps for DAST scan using OWASP ZAP
       # Scan app docker image with Snyk
       # - ./snyk test --severity-threshold=medium --docker $IMAGE_REPO_NAME:$timestamp --file=./Dockerfile --app-vulns --exclude-base-image-vulns
