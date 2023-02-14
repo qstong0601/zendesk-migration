@@ -29,7 +29,7 @@ phases:
       - docker build -t $IMAGE_REPO_NAME:$timestamp .
       - docker tag $IMAGE_REPO_NAME:$timestamp $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$timestamp
       # sca
-      - docker run --rm --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/app snyk/snyk:docker snyk test --docker $IMAGE_REPO_NAME:$timestamp --severity-threshold=critical --json-file-output=/app/sca_vuln.json]; exit 0
+      - docker run --rm --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/app snyk/snyk:docker snyk test --docker $IMAGE_REPO_NAME:$timestamp --severity-threshold=critical --json-file-output=/app/sca_vuln.json; exit 0
       # sast
       - docker run --rm --env SNYK_TOKEN -v $PWD:/app snyk/snyk:docker snyk code test --json-file-output=/app/sast_vuln.json; exit 0
       - ls
