@@ -49,7 +49,7 @@ phases:
       - echo generating a pre-signed url for sharing later
       - PRESIGNED_URL=$(aws s3 presign s3://poc-mc-devsecops-reports/$IMAGE_REPO_NAME/sca/sca_$IMAGE_REPO_NAME_$timestamp.json)
       - echo Sending pre-signed URL to Slack...
-      - curl -X POST -H 'Content-type:application/json' --data '{"text": "Testing"}' $SLACK_URL
+      - curl -X POST -H 'Content-type:application/json' --data '{"text": "Testing"}' $SLACK_WEBHOOK
       # - echo The pre-signed URL is $PRESIGNED_URL
       # - echo SAST scan reports to S3 for record keeping
       # - aws s3 cp sast_vuln.json s3://poc-mc-devsecops-reports/$IMAGE_REPO_NAME/sast/sast_$IMAGE_REPO_NAME_$timestamp.json
