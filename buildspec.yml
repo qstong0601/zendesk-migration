@@ -51,7 +51,7 @@ phases:
       - echo Sending pre-signed URL to Slack...
       - >- 
         curl -X POST -H 'Content-type:application/json' 
-        --data '{"text": "Testing"}' $SLACK_WEBHOOK
+        --data '{"text": "SCA Report of $IMAGE_REPO_NAME:$timestamp $PRESIGNED_URL"}' $SLACK_WEBHOOK
       # - echo The pre-signed URL is $PRESIGNED_URL
       # - echo SAST scan reports to S3 for record keeping
       # - aws s3 cp sast_vuln.json s3://poc-mc-devsecops-reports/$IMAGE_REPO_NAME/sast/sast_$IMAGE_REPO_NAME_$timestamp.json
