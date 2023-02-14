@@ -72,11 +72,11 @@ phases:
           };
         else 
           if [ $exit_code_sca -ne 0 ]; then 
-            >-
+            
             curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"Build of ${IMAGE_REPO_NAME}:${timestamp} due to SCA check exit code: ${exit_code_sca}\"}" $SLACK_WEBHOOK; 
           fi
           if [ $exit_code_sast -ne 0 ]; then 
-            >-
+            
             curl -X POST -H 'Content-type:application/json' --data "{\"text\": \"Build of ${IMAGE_REPO_NAME}:${timestamp} due to SAST check exit code: ${exit_code_sast}\"}" $SLACK_WEBHOOK; 
           fi
         fi
